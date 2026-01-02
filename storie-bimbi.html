@@ -1,0 +1,2671 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storie per Bimbi 📚</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .age-selector {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .age-btn {
+            padding: 15px 30px;
+            font-size: 1.3em;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .age-btn.age-0-2 {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #d35400;
+        }
+
+        .age-btn.age-2-4 {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #8e44ad;
+        }
+
+        .age-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .age-btn.active {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .stories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .story-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .story-card .icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .story-card .title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .story-viewer {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: none;
+        }
+
+        .story-viewer.active {
+            display: block;
+        }
+
+        .story-illustration {
+            width: 100%;
+            height: 400px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .story-illustration .emoji {
+            font-size: 12em;
+            z-index: 2;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .story-illustration .decorative-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .story-text {
+            font-size: 1.5em;
+            line-height: 1.9;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .story-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-indicator {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .credits {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 12px;
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-top: 20px;
+        }
+
+        .credits a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .credits a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Storie per Bimbi 🌈</h1>
+            <p>Scegli la fascia d'età</p>
+        </div>
+
+        <div class="age-selector" id="ageSelector">
+            <button class="age-btn age-0-2" data-age="0-2">
+                👶 0-2 anni
+            </button>
+            <button class="age-btn age-2-4" data-age="2-4">
+                🧒 2-4 anni
+            </button>
+        </div>
+
+        <div id="storiesGrid" class="stories-grid hidden"></div>
+
+        <div id="storyViewer" class="story-viewer">
+            <div id="storyIllustration" class="story-illustration"></div>
+            <div id="storyText" class="story-text"></div>
+            <div class="story-controls">
+                <button class="btn btn-back" id="backBtn">← Indietro</button>
+                <span class="page-indicator" id="pageIndicator"></span>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" id="prevBtn">← Prec</button>
+                    <button class="btn btn-primary" id="nextBtn">Succ →</button>
+                </div>
+            </div>
+            <div class="credits">
+                ✨ App creata con ❤️ da <a href="https://www.youtube.com/@Gianler" target="_blank">Gianler</a> ✨
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORIES = {
+            '0-2': [
+                {
+                    title: "La Luna e la Stellina",
+                    icon: "🌙",
+                    pages: [
+                        {
+                            emoji: "🌙",
+                            background: "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)",
+                            text: "Nel cielo scuro della notte, brillava una grande Luna sorridente."
+                        },
+                        {
+                            emoji: "⭐",
+                            background: "linear-gradient(135deg, #34495e 0%, #2c3e50 100%)",
+                            text: "Accanto a lei, una piccola stellina faceva 'Plin plin!' e rideva felice."
+                        },
+                        {
+                            emoji: "🎵",
+                            background: "linear-gradient(135deg, #5f27cd 0%, #341f97 100%)",
+                            text: "La Luna cantava una dolce ninna nanna: 'Ninna nanna, piccola stella...'."
+                        },
+                        {
+                            emoji: "😴",
+                            background: "linear-gradient(135deg, #341f97 0%, #222f3e 100%)",
+                            text: "La stellina chiuse gli occhini stanchi e cominciò a sbadigliare."
+                        },
+                        {
+                            emoji: "☁️",
+                            background: "linear-gradient(135deg, #222f3e 0%, #2c3e50 100%)",
+                            text: "Una nuvola soffice arrivò piano piano per farle da cuscino."
+                        },
+                        {
+                            emoji: "💤",
+                            background: "linear-gradient(135deg, #192a56 0%, #273c75 100%)",
+                            text: "La stellina si addormentò serena, cullata dalla canzone della Luna."
+                        },
+                        {
+                            emoji: "✨",
+                            background: "linear-gradient(135deg, #273c75 0%, #192a56 100%)",
+                            text: "E sogno cose bellissime fino al mattino. Buonanotte, piccola stella! 💫"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Coniglietto Bianco",
+                    icon: "🐰",
+                    pages: [
+                        {
+                            emoji: "🐰",
+                            background: "linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%)",
+                            text: "In un prato verde viveva un coniglietto bianco con le orecchie morbidissime."
+                        },
+                        {
+                            emoji: "🌸",
+                            background: "linear-gradient(135deg, #ffd3b6 0%, #ffaaa5 100%)",
+                            text: "Ogni mattina saltellava tra i fiori colorati: hop hop hop!"
+                        },
+                        {
+                            emoji: "🦋",
+                            background: "linear-gradient(135deg, #ffaaa5 0%, #ff8b94 100%)",
+                            text: "Le farfalle venivano a giocare con lui e volavano in cerchio."
+                        },
+                        {
+                            emoji: "🥕",
+                            background: "linear-gradient(135deg, #ff8b94 0%, #ffd3b6 100%)",
+                            text: "Trovò una carota arancione e la mangiò felice: gnam gnam!"
+                        },
+                        {
+                            emoji: "☀️",
+                            background: "linear-gradient(135deg, #ffd89b 0%, #19547b 100%)",
+                            text: "Il sole lo guardava e gli faceva il solletico con i suoi raggi caldi."
+                        },
+                        {
+                            emoji: "🤗",
+                            background: "linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%)",
+                            text: "La sera tornò dalla mamma per tante coccole e bacini."
+                        },
+                        {
+                            emoji: "❤️",
+                            background: "linear-gradient(135deg, #ffc3a0 0%, #ffafbd 100%)",
+                            text: "Si addormentò felice pensando alla bella giornata. Sogni d'oro, coniglietto!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Paperella Gialla",
+                    icon: "🦆",
+                    pages: [
+                        {
+                            emoji: "🦆",
+                            background: "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)",
+                            text: "Una paperella gialla nuotava nello stagno facendo 'Qua qua qua!'."
+                        },
+                        {
+                            emoji: "💧",
+                            background: "linear-gradient(135deg, #8fd3f4 0%, #84fab0 100%)",
+                            text: "Le goccioline d'acqua saltavano su e giù: splash splash splash!"
+                        },
+                        {
+                            emoji: "🐟",
+                            background: "linear-gradient(135deg, #a6c0fe 0%, #f68084 100%)",
+                            text: "Un pesciolino rosso nuotò vicino e le fece ciao con la pinna."
+                        },
+                        {
+                            emoji: "🌊",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "La paperella fece le onde con le zampette e rise tanto!"
+                        },
+                        {
+                            emoji: "🦆",
+                            background: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
+                            text: "Chiamò i suoi fratellini: 'Venite a giocare con me!'."
+                        },
+                        {
+                            emoji: "👨‍👩‍👧‍👦",
+                            background: "linear-gradient(135deg, #a6c1ee 0%, #fbc2eb 100%)",
+                            text: "Tutte le paperelle giocarono insieme fino a sera."
+                        },
+                        {
+                            emoji: "🌅",
+                            background: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+                            text: "Quando il sole tramontò, tornarono a casa felici e stanchi. Buonanotte, paperelle!"
+                        }
+                    ]
+                },
+                {
+                    title: "L'Orsetto Dormiglione",
+                    icon: "🐻",
+                    pages: [
+                        {
+                            emoji: "🐻",
+                            background: "linear-gradient(135deg, #d4a574 0%, #a67c52 100%)",
+                            text: "C'era un orsetto marrone che viveva in una tana calda e accogliente."
+                        },
+                        {
+                            emoji: "🌙",
+                            background: "linear-gradient(135deg, #2c3e50 0%, #3498db 100%)",
+                            text: "Quando arrivava la sera, l'orsetto sbadigliava: 'Uuuaaah!'."
+                        },
+                        {
+                            emoji: "🛏️",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%)",
+                            text: "Si infilava nel suo lettino morbido fatto di foglie e muschio."
+                        },
+                        {
+                            emoji: "🍯",
+                            background: "linear-gradient(135deg, #fdcb6e 0%, #e17055 100%)",
+                            text: "Prima di dormire beveva un po' di miele dolce dolce."
+                        },
+                        {
+                            emoji: "💭",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Chiudeva gli occhini e sognava prati pieni di fiori colorati."
+                        },
+                        {
+                            emoji: "🌸",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Nel sogno correva felice tra le farfalle e i fiori profumati."
+                        },
+                        {
+                            emoji: "😴",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "L'orsetto dormì tutta la notte facendo sogni bellissimi. Buonanotte, orsetto!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Trenino Colorato",
+                    icon: "🚂",
+                    pages: [
+                        {
+                            emoji: "🚂",
+                            background: "linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)",
+                            text: "Un trenino rosso e blu partiva dalla stazione facendo: ciuf ciuf!"
+                        },
+                        {
+                            emoji: "🌄",
+                            background: "linear-gradient(135deg, #feca57 0%, #ff9ff3 100%)",
+                            text: "Attraversava montagne verdi e valli piene di fiori."
+                        },
+                        {
+                            emoji: "🌉",
+                            background: "linear-gradient(135deg, #48dbfb 0%, #0abde3 100%)",
+                            text: "Passava sopra ponti che attraversavano fiumi azzurri."
+                        },
+                        {
+                            emoji: "👋",
+                            background: "linear-gradient(135deg, #1dd1a1 0%, #10ac84 100%)",
+                            text: "Gli animali del bosco lo salutavano: 'Ciao trenino!'."
+                        },
+                        {
+                            emoji: "🎶",
+                            background: "linear-gradient(135deg, #f368e0 0%, #ff9ff3 100%)",
+                            text: "Il trenino fischiava allegro: 'Tuuut tuuut!' che bel suono!"
+                        },
+                        {
+                            emoji: "🏠",
+                            background: "linear-gradient(135deg, #ff6348 0%, #ff4757 100%)",
+                            text: "Arrivò alla stazione dove tutti lo aspettavano felici."
+                        },
+                        {
+                            emoji: "😊",
+                            background: "linear-gradient(135deg, #feca57 0%, #ff9ff3 100%)",
+                            text: "Che bella avventura! Domani il trenino farà un altro viaggio meraviglioso!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Farfalla Curiosa",
+                    icon: "🦋",
+                    pages: [
+                        {
+                            emoji: "🦋",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Una farfalla con le ali colorate volava nel giardino."
+                        },
+                        {
+                            emoji: "🌺",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Si posò su un fiore rosso e annusò il suo profumo dolce."
+                        },
+                        {
+                            emoji: "🌼",
+                            background: "linear-gradient(135deg, #55efc4 0%, #81ecec 100%)",
+                            text: "Poi volò su un fiore giallo che brillava al sole."
+                        },
+                        {
+                            emoji: "🌸",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Danzava nell'aria facendo giri e volteggi eleganti."
+                        },
+                        {
+                            emoji: "🐝",
+                            background: "linear-gradient(135deg, #fdcb6e 0%, #ffeaa7 100%)",
+                            text: "Incontrò un'ape che ronzava: 'Bzz bzz! Giochiamo insieme?'."
+                        },
+                        {
+                            emoji: "🌈",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Volarono insieme verso un bellissimo arcobaleno nel cielo."
+                        },
+                        {
+                            emoji: "☁️",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Si riposarono su una nuvola soffice. Che giornata fantastica, farfallina!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Sole Allegro",
+                    icon: "☀️",
+                    pages: [
+                        {
+                            emoji: "🌅",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Al mattino, il sole si svegliò e sbirciò oltre le montagne."
+                        },
+                        {
+                            emoji: "☀️",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Rise alto nel cielo e disse: 'Buongiorno mondo!'."
+                        },
+                        {
+                            emoji: "🌻",
+                            background: "linear-gradient(135deg, #feca57 0%, #ff9ff3 100%)",
+                            text: "I fiori aprirono i petali per salutarlo: 'Ciao sole!'."
+                        },
+                        {
+                            emoji: "🐦",
+                            background: "linear-gradient(135deg, #48dbfb 0%, #0abde3 100%)",
+                            text: "Gli uccellini cominciarono a cantare canzoni allegre."
+                        },
+                        {
+                            emoji: "👶",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ffeaa7 100%)",
+                            text: "I bambini uscirono a giocare sotto i suoi raggi caldi."
+                        },
+                        {
+                            emoji: "🌈",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #74b9ff 100%)",
+                            text: "Il sole fece un arcobaleno dopo la pioggia, che meraviglia!"
+                        },
+                        {
+                            emoji: "🌙",
+                            background: "linear-gradient(135deg, #ff9ff3 0%, #54a0ff 100%)",
+                            text: "Alla sera andò a dormire dicendo: 'A domani!'. Buonanotte, sole!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Gattino Curioso",
+                    icon: "🐱",
+                    pages: [
+                        {
+                            emoji: "🐱",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Un gattino piccolo con gli occhi grandi esplorava la casa."
+                        },
+                        {
+                            emoji: "🧶",
+                            background: "linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)",
+                            text: "Trovò un gomitolo di lana colorata: 'Che cos'è?'."
+                        },
+                        {
+                            emoji: "⚽",
+                            background: "linear-gradient(135deg, #48dbfb 0%, #0abde3 100%)",
+                            text: "Lo toccò con la zampina e il gomitolo rotolò via!"
+                        },
+                        {
+                            emoji: "😸",
+                            background: "linear-gradient(135deg, #55efc4 0%, #81ecec 100%)",
+                            text: "Il gattino corse dietro divertito: 'Miao miao!'."
+                        },
+                        {
+                            emoji: "🦋",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Poi vide una farfalla alla finestra che volava su e giù."
+                        },
+                        {
+                            emoji: "😴",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Dopo tanto giocare, il gattino era stanchissimo."
+                        },
+                        {
+                            emoji: "💤",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Si addormentò nel suo cuscino morbido. Sogni d'oro, micetto!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Nuvola Bianca",
+                    icon: "☁️",
+                    pages: [
+                        {
+                            emoji: "☁️",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Nel cielo azzurro galleggiava una nuvola bianca e soffice."
+                        },
+                        {
+                            emoji: "💨",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Il vento la spingeva piano piano: 'Fuuuu fuuuu'."
+                        },
+                        {
+                            emoji: "🌄",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Viaggiò sopra le montagne verdi e i fiumi azzurri."
+                        },
+                        {
+                            emoji: "🏙️",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Sorvolò la città e vide tante case colorate."
+                        },
+                        {
+                            emoji: "👶",
+                            background: "linear-gradient(135deg, #55efc4 0%, #81ecec 100%)",
+                            text: "I bambini giù in basso la salutavano: 'Ciao nuvoletta!'."
+                        },
+                        {
+                            emoji: "🌧️",
+                            background: "linear-gradient(135deg, #636e72 0%, #b2bec3 100%)",
+                            text: "La nuvola fece cadere goccioline fresche sui fiori."
+                        },
+                        {
+                            emoji: "🌈",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #fd79a8 100%)",
+                            text: "E dopo la pioggia apparve un bellissimo arcobaleno! Che meraviglia!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Pesciolino Rosso",
+                    icon: "🐠",
+                    pages: [
+                        {
+                            emoji: "🐠",
+                            background: "linear-gradient(135deg, #0abde3 0%, #48dbfb 100%)",
+                            text: "Nel mare blu nuotava un pesciolino rosso con pinne dorate."
+                        },
+                        {
+                            emoji: "🫧",
+                            background: "linear-gradient(135deg, #81ecec 0%, #55efc4 100%)",
+                            text: "Faceva le bolle: blubl blubl blubl! Che divertimento!"
+                        },
+                        {
+                            emoji: "🐚",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Trovò una conchiglia rosa che brillava sul fondale."
+                        },
+                        {
+                            emoji: "⭐",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "E una stella marina che gli fece ciao con una zampetta."
+                        },
+                        {
+                            emoji: "🌊",
+                            background: "linear-gradient(135deg, #0984e3 0%, #74b9ff 100%)",
+                            text: "Nuotò tra le onde danzanti: su e giù, su e giù!"
+                        },
+                        {
+                            emoji: "🐙",
+                            background: "linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)",
+                            text: "Incontrò un polpo gentile che gli fece il solletico!"
+                        },
+                        {
+                            emoji: "😊",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Il pesciolino tornò a casa felice. Che bella giornata nel mare!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Coccinella Puntinata",
+                    icon: "🐞",
+                    pages: [
+                        {
+                            emoji: "🐞",
+                            background: "linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)",
+                            text: "Una coccinella rossa con puntini neri camminava su una foglia."
+                        },
+                        {
+                            emoji: "🔢",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Contava i suoi puntini: uno, due, tre... fino a sette!"
+                        },
+                        {
+                            emoji: "🌿",
+                            background: "linear-gradient(135deg, #55efc4 0%, #00b894 100%)",
+                            text: "Salì su uno stelo verde altissimo: che avventura!"
+                        },
+                        {
+                            emoji: "🌸",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "In cima c'era un fiore rosa che profumava di buono."
+                        },
+                        {
+                            emoji: "☀️",
+                            background: "linear-gradient(135deg, #feca57 0%, #ff9ff3 100%)",
+                            text: "Il sole la scaldava con i suoi raggi dorati."
+                        },
+                        {
+                            emoji: "✈️",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "La coccinella aprì le ali e volò via leggera!"
+                        },
+                        {
+                            emoji: "🏡",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Tornò nella sua casetta sotto la foglia. Buonanotte, coccinella!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Palloncino Rosso",
+                    icon: "🎈",
+                    pages: [
+                        {
+                            emoji: "🎈",
+                            background: "linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)",
+                            text: "Un palloncino rosso volava alto alto nel cielo."
+                        },
+                        {
+                            emoji: "💨",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Il vento lo portava su tra le nuvole: che bello volare!"
+                        },
+                        {
+                            emoji: "🦅",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Un uccellino volò vicino: 'Ciao palloncino!'."
+                        },
+                        {
+                            emoji: "☁️",
+                            background: "linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%)",
+                            text: "Attraversò nuvole bianche morbide come il cotone."
+                        },
+                        {
+                            emoji: "🌟",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Vide le stelle che cominciavano a brillare."
+                        },
+                        {
+                            emoji: "👋",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "I bambini giù in basso lo salutavano felici."
+                        },
+                        {
+                            emoji: "❤️",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Il palloncino portava gioia ovunque andasse. Che volo meraviglioso!"
+                        }
+                    ]
+                },
+                {
+                    title: "L'Elefantino Piccino",
+                    icon: "🐘",
+                    pages: [
+                        {
+                            emoji: "🐘",
+                            background: "linear-gradient(135deg, #b2bec3 0%, #636e72 100%)",
+                            text: "Un elefantino grigio con la proboscide corta giocava nel fiume."
+                        },
+                        {
+                            emoji: "💦",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Spruzzava acqua con la proboscide: splash splash!"
+                        },
+                        {
+                            emoji: "😄",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Si faceva il bagno e rideva tanto: 'Che bello!'."
+                        },
+                        {
+                            emoji: "🦁",
+                            background: "linear-gradient(135deg, #feca57 0%, #ee5a6f 100%)",
+                            text: "Un leoncino venne a giocare con lui nell'acqua fresca."
+                        },
+                        {
+                            emoji: "🌴",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Si riposarono all'ombra di una grande palma."
+                        },
+                        {
+                            emoji: "🤗",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "L'elefantino abbracciò la mamma con la proboscide."
+                        },
+                        {
+                            emoji: "🌙",
+                            background: "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)",
+                            text: "Si addormentò felice sotto le stelle. Sogni d'oro, elefantino!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Giraffa Alta",
+                    icon: "🦒",
+                    pages: [
+                        {
+                            emoji: "🦒",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Una giraffa con il collo lungo lungo viveva nella savana."
+                        },
+                        {
+                            emoji: "🌳",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Mangiava le foglie dagli alberi più alti: gnam gnam!"
+                        },
+                        {
+                            emoji: "👀",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Guardava lontano lontano e vedeva tutto il mondo!"
+                        },
+                        {
+                            emoji: "🦓",
+                            background: "linear-gradient(135deg, #dfe6e9 0%, #2d3436 100%)",
+                            text: "Salutò una zebra che passava di corsa."
+                        },
+                        {
+                            emoji: "☀️",
+                            background: "linear-gradient(135deg, #feca57 0%, #ff9ff3 100%)",
+                            text: "Il sole scaldava le sue macchie marroni."
+                        },
+                        {
+                            emoji: "💧",
+                            background: "linear-gradient(135deg, #0abde3 0%, #48dbfb 100%)",
+                            text: "Andò a bere al fiume insieme agli altri animali."
+                        },
+                        {
+                            emoji: "🌅",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Al tramonto guardò il cielo colorarsi. Che bella giornata, giraffa!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Pupazzo di Neve",
+                    icon: "⛄",
+                    pages: [
+                        {
+                            emoji: "❄️",
+                            background: "linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%)",
+                            text: "Nevicava e i fiocchi bianchi scendevano dal cielo."
+                        },
+                        {
+                            emoji: "⛄",
+                            background: "linear-gradient(135deg, #ffffff 0%, #ecf0f1 100%)",
+                            text: "I bambini costruirono un pupazzo di neve rotondo."
+                        },
+                        {
+                            emoji: "🥕",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Gli misero un naso di carota arancione."
+                        },
+                        {
+                            emoji: "🎩",
+                            background: "linear-gradient(135deg, #2d3436 0%, #636e72 100%)",
+                            text: "Un cappello nero e una sciarpa rossa lo rendevano elegante!"
+                        },
+                        {
+                            emoji: "😊",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Il pupazzo sorrideva felice a tutti."
+                        },
+                        {
+                            emoji: "⛷️",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "I bambini giocavano intorno a lui sulla neve."
+                        },
+                        {
+                            emoji: "✨",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Di notte le stelle lo illuminavano. Che inverno magico!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Mela Rossa",
+                    icon: "🍎",
+                    pages: [
+                        {
+                            emoji: "🌳",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Su un albero verde cresceva una mela rossa rossa."
+                        },
+                        {
+                            emoji: "🍎",
+                            background: "linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)",
+                            text: "Era lucida e bella, la più bella dell'albero!"
+                        },
+                        {
+                            emoji: "🐦",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Un uccellino venne a becchettarla: 'Cip cip!'."
+                        },
+                        {
+                            emoji: "☀️",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Il sole la faceva diventare sempre più rossa e dolce."
+                        },
+                        {
+                            emoji: "💨",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Un colpo di vento la fece dondolare: 'Uuuuh!'."
+                        },
+                        {
+                            emoji: "🧺",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Cadde nel cestino insieme alle sue sorelle mele."
+                        },
+                        {
+                            emoji: "😋",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Che buona merenda sarà! Grazie, mela rossa!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Cavalluccio Marino",
+                    icon: "🐴",
+                    pages: [
+                        {
+                            emoji: "🌊",
+                            background: "linear-gradient(135deg, #0abde3 0%, #48dbfb 100%)",
+                            text: "Nell'oceano blu nuotava un cavalluccio marino colorato."
+                        },
+                        {
+                            emoji: "🐴",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Aveva la coda arricciata e nuotava dritto dritto."
+                        },
+                        {
+                            emoji: "🌿",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Si nascondeva tra le alghe verdi: 'Trovami!'."
+                        },
+                        {
+                            emoji: "🐠",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Giocava a nascondino con i pesciolini."
+                        },
+                        {
+                            emoji: "🪸",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Danzava tra i coralli colorati: rossi, rosa, arancioni!"
+                        },
+                        {
+                            emoji: "🫧",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Faceva tante bollicine che salivano su su."
+                        },
+                        {
+                            emoji: "🌙",
+                            background: "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)",
+                            text: "Di notte dormiva abbracciato a un'alga. Buonanotte, cavalluccio!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Tartaruga Lenta",
+                    icon: "🐢",
+                    pages: [
+                        {
+                            emoji: "🐢",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Una tartarughina verde camminava piano piano."
+                        },
+                        {
+                            emoji: "🐌",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Incontrò una lumachina: 'Facciamo una gara?'."
+                        },
+                        {
+                            emoji: "🌸",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Camminavano tra i fiori profumati del prato."
+                        },
+                        {
+                            emoji: "☀️",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Il sole le scaldava il guscio verde."
+                        },
+                        {
+                            emoji: "💧",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Si fermarono a bere dalla pozzanghera fresca."
+                        },
+                        {
+                            emoji: "😊",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Non importava chi arrivava prima: si divertivano insieme!"
+                        },
+                        {
+                            emoji: "🏁",
+                            background: "linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%)",
+                            text: "Arrivarono al traguardo felici. Piano piano si arriva sempre!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Gufo Saggio",
+                    icon: "🦉",
+                    pages: [
+                        {
+                            emoji: "🦉",
+                            background: "linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)",
+                            text: "Su un ramo alto viveva un gufo marrone con occhi grandi."
+                        },
+                        {
+                            emoji: "🌙",
+                            background: "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)",
+                            text: "Di notte cantava: 'Uhuu uhuu!' sotto la luna."
+                        },
+                        {
+                            emoji: "⭐",
+                            background: "linear-gradient(135deg, #192a56 0%, #273c75 100%)",
+                            text: "Guardava le stelle brillare nel cielo scuro."
+                        },
+                        {
+                            emoji: "🦊",
+                            background: "linear-gradient(135deg, #ee5a6f 0%, #ff6b6b 100%)",
+                            text: "Una volpe passò e lo salutò da giù."
+                        },
+                        {
+                            emoji: "🌲",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Il gufo vegliava sul bosco tutta la notte."
+                        },
+                        {
+                            emoji: "🌅",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Quando spuntava il sole, andava a dormire."
+                        },
+                        {
+                            emoji: "😴",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Chiuse gli occhioni stanchi. Sogni d'oro, gufo saggio!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Carota Arancione",
+                    icon: "🥕",
+                    pages: [
+                        {
+                            emoji: "🥕",
+                            background: "linear-gradient(135deg, #fdcb6e 0%, #ee5a6f 100%)",
+                            text: "Nell'orto cresceva una carota arancione bella croccante."
+                        },
+                        {
+                            emoji: "🌱",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Aveva foglie verdi che spuntavano dalla terra."
+                        },
+                        {
+                            emoji: "🐰",
+                            background: "linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%)",
+                            text: "Un coniglietto la annusò: 'Mmmh che profumo!'."
+                        },
+                        {
+                            emoji: "💪",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Il coniglietto tirò forte: 'Uno, due, tre!'."
+                        },
+                        {
+                            emoji: "🎉",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "CRAC! La carota uscì dalla terra!"
+                        },
+                        {
+                            emoji: "😋",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Il coniglietto la mangiò felice: gnam gnam!"
+                        },
+                        {
+                            emoji: "🌟",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Era la carota più buona del mondo! Evviva l'orto!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Pulcino Giallo",
+                    icon: "🐤",
+                    pages: [
+                        {
+                            emoji: "🥚",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "In un nido c'era un uovo che cominciò a muoversi."
+                        },
+                        {
+                            emoji: "🐤",
+                            background: "linear-gradient(135deg, #feca57 0%, #ff9ff3 100%)",
+                            text: "CRACK! Uscì un pulcino giallo: 'Pio pio!'."
+                        },
+                        {
+                            emoji: "🐔",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "La mamma chioccia era felicissima!"
+                        },
+                        {
+                            emoji: "🌾",
+                            background: "linear-gradient(135deg, #fdcb6e 0%, #ffeaa7 100%)",
+                            text: "Il pulcino beccava i chicchi: bec bec bec!"
+                        },
+                        {
+                            emoji: "🦋",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Corse dietro a una farfalla nel prato."
+                        },
+                        {
+                            emoji: "☀️",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Il sole lo scaldava con i suoi raggi d'oro."
+                        },
+                        {
+                            emoji: "😴",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Stanco felice, dormì sotto l'ala della mamma. Buonanotte, pulcino!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Barca Blu",
+                    icon: "⛵",
+                    pages: [
+                        {
+                            emoji: "⛵",
+                            background: "linear-gradient(135deg, #0abde3 0%, #48dbfb 100%)",
+                            text: "Una barchetta blu navigava sul mare calmo."
+                        },
+                        {
+                            emoji: "💨",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Il vento gonfiava la vela bianca: 'Fuuuu!'."
+                        },
+                        {
+                            emoji: "🌊",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Le onde la cullavano: su e giù, su e giù."
+                        },
+                        {
+                            emoji: "🐬",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Un delfino saltò fuori dall'acqua: 'Ciao barchetta!'."
+                        },
+                        {
+                            emoji: "🐦",
+                            background: "linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%)",
+                            text: "I gabbiani volavano intorno cantando."
+                        },
+                        {
+                            emoji: "🌅",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Il tramonto colorò il cielo di rosa e arancione."
+                        },
+                        {
+                            emoji: "⚓",
+                            background: "linear-gradient(135deg, #2d3436 0%, #636e72 100%)",
+                            text: "La barchetta arrivò al porto. Che bella giornata in mare!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Fiore Rosa",
+                    icon: "🌸",
+                    pages: [
+                        {
+                            emoji: "🌱",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Nel giardino spuntò una piccola piantina verde."
+                        },
+                        {
+                            emoji: "🌸",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Crebbe e crebbe fino a diventare un bel fiore rosa!"
+                        },
+                        {
+                            emoji: "🐝",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Le api venivano a trovarlo: 'Bzz bzz!'."
+                        },
+                        {
+                            emoji: "☀️",
+                            background: "linear-gradient(135deg, #feca57 0%, #ff9ff3 100%)",
+                            text: "Il sole lo faceva brillare di rosa acceso."
+                        },
+                        {
+                            emoji: "💧",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "La pioggia lo innaffiava: tic tic tic!"
+                        },
+                        {
+                            emoji: "🦋",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Le farfalle danzavano intorno ai suoi petali."
+                        },
+                        {
+                            emoji: "😊",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Il fiore sorrideva felice: era il più bello del giardino!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Campana d'Oro",
+                    icon: "🔔",
+                    pages: [
+                        {
+                            emoji: "🔔",
+                            background: "linear-gradient(135deg, #fdcb6e 0%, #feca57 100%)",
+                            text: "Sul campanile c'era una campana dorata che brillava."
+                        },
+                        {
+                            emoji: "🎵",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Faceva: 'Din don dan!' con un suono dolce."
+                        },
+                        {
+                            emoji: "🌅",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Ogni mattina svegliava il paese: 'Buongiorno!'."
+                        },
+                        {
+                            emoji: "👨‍👩‍👧‍👦",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Le persone sentivano il suono e sorridevano."
+                        },
+                        {
+                            emoji: "🦅",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Gli uccellini si posavano sul campanile per ascoltare."
+                        },
+                        {
+                            emoji: "🌙",
+                            background: "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)",
+                            text: "La sera suonava la buonanotte: 'Din don dan'."
+                        },
+                        {
+                            emoji: "⭐",
+                            background: "linear-gradient(135deg, #192a56 0%, #273c75 100%)",
+                            text: "Sotto le stelle brillava d'oro. Che campana speciale!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Pioggia Gentile",
+                    icon: "🌧️",
+                    pages: [
+                        {
+                            emoji: "☁️",
+                            background: "linear-gradient(135deg, #636e72 0%, #b2bec3 100%)",
+                            text: "Nel cielo arrivarono nuvolette grigie."
+                        },
+                        {
+                            emoji: "🌧️",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Cominciò a piovere: tic tic tic sulle foglie!"
+                        },
+                        {
+                            emoji: "💧",
+                            background: "linear-gradient(135deg, #81ecec 0%, #00b894 100%)",
+                            text: "Le goccioline cadevano una dopo l'altra."
+                        },
+                        {
+                            emoji: "🌻",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "I fiori bevevano l'acqua fresca: 'Grazie pioggia!'."
+                        },
+                        {
+                            emoji: "🐸",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Le ranocchie saltavano felici nelle pozzanghere."
+                        },
+                        {
+                            emoji: "☀️",
+                            background: "linear-gradient(135deg, #feca57 0%, #ff9ff3 100%)",
+                            text: "Poi uscì il sole e tutto brillava!"
+                        },
+                        {
+                            emoji: "🌈",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #fd79a8 100%)",
+                            text: "Apparve un arcobaleno bellissimo! Che magia, pioggia!"
+                        }
+                    ]
+                }
+            ],
+            '2-4': [
+                {
+                    title: "Il Draghetto Gentile",
+                    icon: "🐉",
+                    pages: [
+                        {
+                            emoji: "🐉",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "In una montagna lontana viveva un piccolo draghetto verde di nome Fuocherello."
+                        },
+                        {
+                            emoji: "😢",
+                            background: "linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)",
+                            text: "Fuocherello era triste perché non riusciva a sputare fuoco come gli altri draghi."
+                        },
+                        {
+                            emoji: "💨",
+                            background: "linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)",
+                            text: "Quando soffiava forte, usciva solo aria fresca e profumata di fiori!"
+                        },
+                        {
+                            emoji: "🌸",
+                            background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                            text: "Gli animali del bosco adoravano la sua aria fresca nelle giornate calde."
+                        },
+                        {
+                            emoji: "🦋",
+                            background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                            text: "Le farfalle volavano intorno a lui perché profumava di fiori meravigliosi."
+                        },
+                        {
+                            emoji: "🌈",
+                            background: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+                            text: "Un giorno capì che essere diverso era il suo superpotere speciale!"
+                        },
+                        {
+                            emoji: "🎉",
+                            background: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+                            text: "Tutti gli animali fecero una festa per celebrare il draghetto più gentile del mondo!"
+                        },
+                        {
+                            emoji: "❤️",
+                            background: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+                            text: "Fuocherello imparò che essere se stessi è la cosa più bella. E tu sei speciale così come sei!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Principessa Coraggiosa",
+                    icon: "👸",
+                    pages: [
+                        {
+                            emoji: "👸",
+                            background: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+                            text: "C'era una volta una principessa di nome Luna che amava le avventure."
+                        },
+                        {
+                            emoji: "🌳",
+                            background: "linear-gradient(135deg, #a8e063 0%, #56ab2f 100%)",
+                            text: "Un giorno, esplorando il bosco, sentì un pianto: 'Piu piu piu!'."
+                        },
+                        {
+                            emoji: "🐦",
+                            background: "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)",
+                            text: "Era un uccellino caduto dal nido! 'Non preoccuparti, ti aiuto io!' disse Luna."
+                        },
+                        {
+                            emoji: "🪜",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Raccolse rami e foglie e costruì una scala fino all'albero più alto."
+                        },
+                        {
+                            emoji: "💪",
+                            background: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+                            text: "Salì con coraggio, scalino dopo scalino, fino al nido in cima."
+                        },
+                        {
+                            emoji: "🤱",
+                            background: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)",
+                            text: "Rimise delicatamente l'uccellino accanto ai suoi fratellini."
+                        },
+                        {
+                            emoji: "🎵",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "La mamma uccellina cantò una canzone di ringraziamento così bella!"
+                        },
+                        {
+                            emoji: "✨",
+                            background: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+                            text: "Luna capì che il vero coraggio è aiutare chi ha bisogno. E tu sei coraggioso come lei!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Robot Gentile",
+                    icon: "🤖",
+                    pages: [
+                        {
+                            emoji: "🤖",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Nella città del futuro c'era un piccolo robot di nome Chip con un cuore d'oro."
+                        },
+                        {
+                            emoji: "📚",
+                            background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                            text: "Chip aiutava i bambini a portare i libri pesanti a scuola ogni giorno."
+                        },
+                        {
+                            emoji: "🌻",
+                            background: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+                            text: "Annaffiava i fiori nel parco e cantava canzoni allegre per farli crescere."
+                        },
+                        {
+                            emoji: "😊",
+                            background: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+                            text: "Quando vedeva qualcuno triste, faceva battute divertenti fino a farlo ridere."
+                        },
+                        {
+                            emoji: "💔",
+                            background: "linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)",
+                            text: "Un giorno Chip si ruppe e smise di funzionare. Tutti erano preoccupati!"
+                        },
+                        {
+                            emoji: "🔧",
+                            background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                            text: "I bambini e gli adulti corsero ad aggiustarlo con amore e attenzione."
+                        },
+                        {
+                            emoji: "💡",
+                            background: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+                            text: "Chip si riaccese e i suoi occhi brillarono: 'Grazie amici! L'amore aggiusta tutto!'."
+                        },
+                        {
+                            emoji: "🎊",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Tutti festeggiarono insieme. L'amicizia e la gentilezza rendono il mondo migliore!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Mago Pasticcione",
+                    icon: "🧙‍♂️",
+                    pages: [
+                        {
+                            emoji: "🧙‍♂️",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "In una torre magica viveva il mago Sbadato con il suo cappello a stelle."
+                        },
+                        {
+                            emoji: "📚",
+                            background: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+                            text: "Aveva tanti libri di magie, ma dimenticava sempre le formule!"
+                        },
+                        {
+                            emoji: "🌹",
+                            background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                            text: "Voleva far apparire una rosa rossa ma... ZAC!"
+                        },
+                        {
+                            emoji: "🦒",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%)",
+                            text: "Apparve una giraffa altissima! 'Ops!' rise il mago divertito."
+                        },
+                        {
+                            emoji: "😄",
+                            background: "linear-gradient(135deg, #48dbfb 0%, #0abde3 100%)",
+                            text: "Tutti i bambini venivano a vedere le sue magie pazze e ridevano tanto!"
+                        },
+                        {
+                            emoji: "🎪",
+                            background: "linear-gradient(135deg, #ff6348 0%, #ff4757 100%)",
+                            text: "La torre diventò come un circo pieno di animali strani e divertenti."
+                        },
+                        {
+                            emoji: "💖",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Il mago capì che far ridere gli altri era la magia più bella di tutte!"
+                        },
+                        {
+                            emoji: "✨",
+                            background: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+                            text: "E ogni giorno continuò a fare sorridere tutti con le sue magie pasticcione!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Balena Canterina",
+                    icon: "🐋",
+                    pages: [
+                        {
+                            emoji: "🐋",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Nell'oceano profondo viveva una balena blu che adorava cantare."
+                        },
+                        {
+                            emoji: "🎵",
+                            background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                            text: "La sua voce era così bella che faceva danzare le onde del mare!"
+                        },
+                        {
+                            emoji: "🐠",
+                            background: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+                            text: "I pesciolini si riunivano intorno a lei per ascoltare le sue canzoni."
+                        },
+                        {
+                            emoji: "🌊",
+                            background: "linear-gradient(135deg, #a8e063 0%, #56ab2f 100%)",
+                            text: "Cantava canzoni dell'oceano che parlavano di avventure meravigliose."
+                        },
+                        {
+                            emoji: "🌙",
+                            background: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)",
+                            text: "Ogni sera cantava la ninna nanna ai piccoli pesci: 'Dormi dormi...'."
+                        },
+                        {
+                            emoji: "⭐",
+                            background: "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)",
+                            text: "Anche le stelle si fermavano per ascoltarla cantare nel silenzio della notte."
+                        },
+                        {
+                            emoji: "💭",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Quando dormiva, sognava nuove melodie da cantare il giorno dopo."
+                        },
+                        {
+                            emoji: "❤️",
+                            background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                            text: "La musica univa tutti gli abitanti del mare in un'unica grande famiglia!"
+                        }
+                    ]
+                },
+                {
+                    title: "L'Albero dei Desideri",
+                    icon: "🌳",
+                    pages: [
+                        {
+                            emoji: "🌳",
+                            background: "linear-gradient(135deg, #a8e063 0%, #56ab2f 100%)",
+                            text: "Al centro del bosco c'era un albero speciale con foglie dorate."
+                        },
+                        {
+                            emoji: "✨",
+                            background: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+                            text: "Si diceva che potesse esaudire i desideri di chi aveva un cuore gentile."
+                        },
+                        {
+                            emoji: "🦊",
+                            background: "linear-gradient(135deg, #ff9a56 0%, #ff6a00 100%)",
+                            text: "Una volpe arrivò e chiese: 'Vorrei tanti amici con cui giocare'."
+                        },
+                        {
+                            emoji: "🌟",
+                            background: "linear-gradient(135deg, #ffd89b 0%, #19547b 100%)",
+                            text: "L'albero brillò e una luce magica avvolse tutto il bosco!"
+                        },
+                        {
+                            emoji: "🐰",
+                            background: "linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%)",
+                            text: "Un coniglio timido chiese: 'Vorrei essere più coraggioso'."
+                        },
+                        {
+                            emoji: "💪",
+                            background: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+                            text: "L'albero gli diede il coraggio di provare cose nuove ogni giorno!"
+                        },
+                        {
+                            emoji: "🦋",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Una farfalla desiderò: 'Vorrei portare gioia a tutti'."
+                        },
+                        {
+                            emoji: "🎉",
+                            background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                            text: "L'albero le diede ali ancora più colorate che facevano sorridere chiunque!"
+                        },
+                        {
+                            emoji: "💚",
+                            background: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+                            text: "L'albero insegnò che i desideri più belli sono quelli che aiutano gli altri!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Volpe Artista",
+                    icon: "🦊",
+                    pages: [
+                        {
+                            emoji: "🦊",
+                            background: "linear-gradient(135deg, #ee5a6f 0%, #ff6b6b 100%)",
+                            text: "Nel bosco viveva una volpe arancione di nome Pennello che amava dipingere."
+                        },
+                        {
+                            emoji: "🎨",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Con la coda intingeva i colori e dipingeva sui tronchi degli alberi."
+                        },
+                        {
+                            emoji: "🌳",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Dipinse un bosco magico con alberi colorati e folletti."
+                        },
+                        {
+                            emoji: "🦌",
+                            background: "linear-gradient(135deg, #d4a574 0%, #a67c52 100%)",
+                            text: "Un cervo rimase incantato: 'Che bellezza! Posso aiutarti?'."
+                        },
+                        {
+                            emoji: "🍃",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Gli animali portarono bacche per fare i colori: rosse, blu, gialle!"
+                        },
+                        {
+                            emoji: "🖼️",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Insieme crearono una galleria d'arte nel cuore del bosco."
+                        },
+                        {
+                            emoji: "🎭",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Animali da tutto il mondo venivano a vedere le loro opere."
+                        },
+                        {
+                            emoji: "✨",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Pennello imparò che l'arte è ancora più bella quando è condivisa!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Pinguino Ballerino",
+                    icon: "🐧",
+                    pages: [
+                        {
+                            emoji: "🐧",
+                            background: "linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%)",
+                            text: "Al Polo Sud viveva un pinguino di nome Tango che amava ballare."
+                        },
+                        {
+                            emoji: "🎵",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Invece di pescare, ballava sul ghiaccio: tip tap tip tap!"
+                        },
+                        {
+                            emoji: "🐟",
+                            background: "linear-gradient(135deg, #0abde3 0%, #48dbfb 100%)",
+                            text: "Gli altri pinguini dicevano: 'Devi pescare come noi!'."
+                        },
+                        {
+                            emoji: "💃",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Ma Tango continuava a volteggiare elegante sul ghiaccio."
+                        },
+                        {
+                            emoji: "🦭",
+                            background: "linear-gradient(135deg, #636e72 0%, #b2bec3 100%)",
+                            text: "Un giorno arrivarono delle foche: 'Ci insegni a ballare?'."
+                        },
+                        {
+                            emoji: "🎶",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Tango organizzò una scuola di ballo sulla banchisa!"
+                        },
+                        {
+                            emoji: "🌌",
+                            background: "linear-gradient(135deg, #192a56 0%, #273c75 100%)",
+                            text: "Sotto l'aurora boreale, tutti ballavano insieme."
+                        },
+                        {
+                            emoji: "🎊",
+                            background: "linear-gradient(135deg, #feca57 0%, #ff9ff3 100%)",
+                            text: "Il Polo Sud diventò il luogo più allegro del mondo! La passione rende felici!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Fatina dei Sogni",
+                    icon: "🧚",
+                    pages: [
+                        {
+                            emoji: "🧚",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Ogni notte volava una piccola fatina con ali di farfalla."
+                        },
+                        {
+                            emoji: "✨",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Portava un sacchetto pieno di sogni magici per i bambini."
+                        },
+                        {
+                            emoji: "🏰",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Alcuni sogni parlavano di castelli e principesse coraggiose."
+                        },
+                        {
+                            emoji: "🐉",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Altri di draghi gentili che proteggevano i villaggi."
+                        },
+                        {
+                            emoji: "🌟",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "La fatina spruzzava polvere di stelle sui bambini addormentati."
+                        },
+                        {
+                            emoji: "😊",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "I bambini sorridevano nel sonno, felici dei sogni bellissimi."
+                        },
+                        {
+                            emoji: "🌅",
+                            background: "linear-gradient(135deg, #feca57 0%, #ee5a6f 100%)",
+                            text: "Al mattino si svegliavano pieni di energia e creatività."
+                        },
+                        {
+                            emoji: "💫",
+                            background: "linear-gradient(135deg, #30cfd0 0%, #330867 100%)",
+                            text: "La fatina tornava nel suo regno, pronta per la notte successiva!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Cavaliere e il Bruco",
+                    icon: "🛡️",
+                    pages: [
+                        {
+                            emoji: "🛡️",
+                            background: "linear-gradient(135deg, #636e72 0%, #2d3436 100%)",
+                            text: "Il cavaliere Lancelot doveva attraversare un ponte magico."
+                        },
+                        {
+                            emoji: "🐛",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Ma lo custodiva un minuscolo bruco verde!"
+                        },
+                        {
+                            emoji: "🌉",
+                            background: "linear-gradient(135deg, #d4a574 0%, #a67c52 100%)",
+                            text: "'Non puoi passare!' disse il bruco. 'Il ponte è troppo fragile!'."
+                        },
+                        {
+                            emoji: "🤔",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Lancelot ci pensò: 'Hai ragione, piccolo guardiano'."
+                        },
+                        {
+                            emoji: "🔨",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Insieme costruirono un ponte nuovo, forte e sicuro per tutti!"
+                        },
+                        {
+                            emoji: "🦋",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Intanto il bruco si trasformò in una farfalla bellissima."
+                        },
+                        {
+                            emoji: "👑",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Il re nominò il bruco-farfalla Guardiano Reale del Ponte."
+                        },
+                        {
+                            emoji: "🤝",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Lancelot imparò che anche i più piccoli hanno grandi idee!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Treno delle Emozioni",
+                    icon: "🚂",
+                    pages: [
+                        {
+                            emoji: "🚂",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "C'era un treno magico con vagoni di tutti i colori."
+                        },
+                        {
+                            emoji: "❤️",
+                            background: "linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)",
+                            text: "Il vagone rosso insegnava la gioia e l'amore."
+                        },
+                        {
+                            emoji: "💙",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Il vagone blu aiutava a trovare la calma quando si era agitati."
+                        },
+                        {
+                            emoji: "💛",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Il vagone giallo riempiva di curiosità e voglia di imparare."
+                        },
+                        {
+                            emoji: "💚",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Il vagone verde insegnava ad avere speranza nei momenti difficili."
+                        },
+                        {
+                            emoji: "🧡",
+                            background: "linear-gradient(135deg, #feca57 0%, #ee5a6f 100%)",
+                            text: "Il vagone arancione dava coraggio per provare cose nuove."
+                        },
+                        {
+                            emoji: "💜",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Il vagone viola aiutava a capire quando si era tristi."
+                        },
+                        {
+                            emoji: "🌈",
+                            background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                            text: "I bambini impararono che tutte le emozioni sono importanti e speciali!"
+                        }
+                    ]
+                },
+                {
+                    title: "L'Ape Ingegnere",
+                    icon: "🐝",
+                    pages: [
+                        {
+                            emoji: "🐝",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Un'apina di nome Zita non faceva solo miele: costruiva case!"
+                        },
+                        {
+                            emoji: "🏗️",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Progettava edifici speciali per ogni insetto del prato."
+                        },
+                        {
+                            emoji: "🐜",
+                            background: "linear-gradient(135deg, #2d3436 0%, #636e72 100%)",
+                            text: "Per le formiche fece un grattacielo con tanti piani!"
+                        },
+                        {
+                            emoji: "🐞",
+                            background: "linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)",
+                            text: "Per le coccinelle creò casette rotonde come i loro gusci."
+                        },
+                        {
+                            emoji: "🦗",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Per i grilli fece una sala da concerto per le loro canzoni."
+                        },
+                        {
+                            emoji: "🦋",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Per le farfalle costruì case-fiore colorate e profumate."
+                        },
+                        {
+                            emoji: "🏘️",
+                            background: "linear-gradient(135deg, #feca57 0%, #ff9ff3 100%)",
+                            text: "Il prato divenne un villaggio meraviglioso dove tutti vivevano felici."
+                        },
+                        {
+                            emoji: "🎉",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Zita capì che usare i propri talenti per aiutare gli altri è bellissimo!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Stella Cadente Timida",
+                    icon: "⭐",
+                    pages: [
+                        {
+                            emoji: "⭐",
+                            background: "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)",
+                            text: "Nel cielo viveva una stellina che aveva paura di cadere."
+                        },
+                        {
+                            emoji: "😰",
+                            background: "linear-gradient(135deg, #192a56 0%, #273c75 100%)",
+                            text: "'E se cado male? E se non brillo abbastanza?' pensava sempre."
+                        },
+                        {
+                            emoji: "🌟",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Le altre stelle cadenti erano così sicure e luminose!"
+                        },
+                        {
+                            emoji: "🌙",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "La Luna le disse: 'Ognuno brilla a modo suo, piccola stella'."
+                        },
+                        {
+                            emoji: "💪",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "La stellina prese coraggio e si lanciò nel cielo notturno!"
+                        },
+                        {
+                            emoji: "✨",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Brillò così tanto che illuminò tutto il cielo!"
+                        },
+                        {
+                            emoji: "👨‍👩‍👧‍👦",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "I bambini la videro ed espressero mille desideri!"
+                        },
+                        {
+                            emoji: "💖",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "La stellina capì che essere se stessi è la cosa più coraggiosa!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Gatto Esploratore",
+                    icon: "🐱",
+                    pages: [
+                        {
+                            emoji: "🐱",
+                            background: "linear-gradient(135deg, #feca57 0%, #ee5a6f 100%)",
+                            text: "Felix era un gatto arancione che sognava di esplorare il mondo."
+                        },
+                        {
+                            emoji: "🗺️",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Disegnò una mappa con tutti i posti che voleva visitare."
+                        },
+                        {
+                            emoji: "🌳",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Prima tappa: il bosco magico oltre il giardino!"
+                        },
+                        {
+                            emoji: "🦉",
+                            background: "linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)",
+                            text: "Incontrò un gufo saggio che gli raccontò storie antiche."
+                        },
+                        {
+                            emoji: "🏔️",
+                            background: "linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%)",
+                            text: "Seconda tappa: la montagna delle nuvole!"
+                        },
+                        {
+                            emoji: "🌊",
+                            background: "linear-gradient(135deg, #0abde3 0%, #48dbfb 100%)",
+                            text: "Terza tappa: il fiume che cantava canzoni."
+                        },
+                        {
+                            emoji: "🏡",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Tornò a casa pieno di storie meravigliose da raccontare."
+                        },
+                        {
+                            emoji: "📖",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Felix imparò che l'avventura è ovunque, basta cercarla!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Camaleonte Pittore",
+                    icon: "🦎",
+                    pages: [
+                        {
+                            emoji: "🦎",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Carlo il camaleonte non cambiava colore per nascondersi."
+                        },
+                        {
+                            emoji: "🎨",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Lo faceva per creare arte sul suo corpo!"
+                        },
+                        {
+                            emoji: "🌈",
+                            background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                            text: "Un giorno divenne un arcobaleno vivente!"
+                        },
+                        {
+                            emoji: "🌅",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Il giorno dopo dipinse un tramonto su tutto il suo corpo."
+                        },
+                        {
+                            emoji: "🎭",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Gli animali venivano da lontano per vedere le sue opere."
+                        },
+                        {
+                            emoji: "🖼️",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Artisti provavano a dipingere Carlo mentre cambiava colori!"
+                        },
+                        {
+                            emoji: "🏆",
+                            background: "linear-gradient(135deg, #feca57 0%, #ee5a6f 100%)",
+                            text: "Divenne famoso in tutto il mondo come 'Il Camaleonte Artista'."
+                        },
+                        {
+                            emoji: "✨",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Carlo insegnò che essere unici è la forma d'arte più bella!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Faro Solitario",
+                    icon: "🗼",
+                    pages: [
+                        {
+                            emoji: "🗼",
+                            background: "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)",
+                            text: "Su uno scoglio in mezzo al mare c'era un faro che si sentiva solo."
+                        },
+                        {
+                            emoji: "😔",
+                            background: "linear-gradient(135deg, #636e72 0%, #2d3436 100%)",
+                            text: "'Nessuno mi viene mai a trovare', pensava triste ogni notte."
+                        },
+                        {
+                            emoji: "💡",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Ma ogni notte accendeva la sua luce per guidare le navi."
+                        },
+                        {
+                            emoji: "⛵",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Le navi seguivano la sua luce e arrivavano al porto sicure."
+                        },
+                        {
+                            emoji: "📻",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Un giorno iniziò a ricevere messaggi radio: 'Grazie, faro!'."
+                        },
+                        {
+                            emoji: "🚢",
+                            background: "linear-gradient(135deg, #0abde3 0%, #48dbfb 100%)",
+                            text: "'Ci hai salvato dalla tempesta!' 'Sei il nostro eroe!'."
+                        },
+                        {
+                            emoji: "🎊",
+                            background: "linear-gradient(135deg, #feca57 0%, #ee5a6f 100%)",
+                            text: "Le navi organizzarono una festa in suo onore!"
+                        },
+                        {
+                            emoji: "❤️",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Il faro capì di avere migliaia di amici che pensavano a lui ogni notte!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Lumaca Coraggiosa",
+                    icon: "🐌",
+                    pages: [
+                        {
+                            emoji: "🐌",
+                            background: "linear-gradient(135deg, #d4a574 0%, #a67c52 100%)",
+                            text: "Nel giardino tutti ridevano di Lumilla perché era lenta."
+                        },
+                        {
+                            emoji: "🦗",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "'Non arriverai mai!' diceva il grillo saltando veloce."
+                        },
+                        {
+                            emoji: "💪",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Ma Lumilla non si arrendeva: 'Piano piano, ma sempre avanti!'."
+                        },
+                        {
+                            emoji: "🌅",
+                            background: "linear-gradient(135deg, #feca57 0%, #ee5a6f 100%)",
+                            text: "Camminava dal mattino alla sera, senza mai fermarsi."
+                        },
+                        {
+                            emoji: "😴",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Gli altri animali si fermavano a riposare, ma lei continuava."
+                        },
+                        {
+                            emoji: "🌙",
+                            background: "linear-gradient(135deg, #2c3e50 0%, #34495e 100%)",
+                            text: "Camminava anche di notte sotto la luna e le stelle."
+                        },
+                        {
+                            emoji: "🏆",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Alla fine arrivò prima di tutti al traguardo!"
+                        },
+                        {
+                            emoji: "✨",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Lumilla insegnò che la costanza e la determinazione battono la velocità!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Libro Magico",
+                    icon: "📖",
+                    pages: [
+                        {
+                            emoji: "📚",
+                            background: "linear-gradient(135deg, #d4a574 0%, #a67c52 100%)",
+                            text: "In una vecchia biblioteca c'era un libro dimenticato da tutti."
+                        },
+                        {
+                            emoji: "😔",
+                            background: "linear-gradient(135deg, #636e72 0%, #b2bec3 100%)",
+                            text: "Era polveroso e sembrava noioso, così nessuno lo apriva mai."
+                        },
+                        {
+                            emoji: "👧",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Una bambina curiosa decise: 'Voglio vedere cosa c'è dentro!'."
+                        },
+                        {
+                            emoji: "✨",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Appena lo aprì, una luce magica riempì la stanza!"
+                        },
+                        {
+                            emoji: "🐉",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Dalle pagine uscirono draghi, principesse e cavalieri!"
+                        },
+                        {
+                            emoji: "🏰",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Castelli si materializzarono e la biblioteca divenne un regno!"
+                        },
+                        {
+                            emoji: "🎭",
+                            background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                            text: "I personaggi raccontarono le loro storie alla bambina."
+                        },
+                        {
+                            emoji: "❤️",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Il libro disse: 'Grazie per aver creduto nella magia!' E divennero amici per sempre!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Giraffa Ballerina",
+                    icon: "🦒",
+                    pages: [
+                        {
+                            emoji: "🦒",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Gigia aveva il collo così lungo che quando ballava faceva ridere tutti."
+                        },
+                        {
+                            emoji: "😢",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "'Il tuo collo è troppo lungo per la danza!' le dicevano."
+                        },
+                        {
+                            emoji: "💃",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Ma Gigia continuava a provare ogni giorno, senza arrendersi."
+                        },
+                        {
+                            emoji: "💡",
+                            background: "linear-gradient(135deg, #feca57 0%, #ee5a6f 100%)",
+                            text: "Un giorno ebbe un'idea: 'Creerò una danza solo mia!'."
+                        },
+                        {
+                            emoji: "🌊",
+                            background: "linear-gradient(135deg, #0abde3 0%, #48dbfb 100%)",
+                            text: "Inventò movimenti ondulati del collo che sembravano onde del mare."
+                        },
+                        {
+                            emoji: "🎭",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Creò la 'Danza della Giraffa' che era unica e meravigliosa!"
+                        },
+                        {
+                            emoji: "👏",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Tutti gli animali vollero imparare la sua danza speciale!"
+                        },
+                        {
+                            emoji: "🌟",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Gigia insegnò che ciò che ci rende diversi è il nostro superpotere!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Criceto Inventore",
+                    icon: "🐹",
+                    pages: [
+                        {
+                            emoji: "🐹",
+                            background: "linear-gradient(135deg, #d4a574 0%, #a67c52 100%)",
+                            text: "Rodolfo era un criceto che amava inventare macchine strane."
+                        },
+                        {
+                            emoji: "🛠️",
+                            background: "linear-gradient(135deg, #636e72 0%, #b2bec3 100%)",
+                            text: "Invece di correre nella ruota, costruiva robot e congegni!"
+                        },
+                        {
+                            emoji: "🍿",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Inventò una macchina che trasformava le nocciole in popcorn!"
+                        },
+                        {
+                            emoji: "🤖",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Creò un robot che raccoglieva semi mentre lui inventava."
+                        },
+                        {
+                            emoji: "😕",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Gli altri criceti dicevano: 'Che invenzioni strane!'."
+                        },
+                        {
+                            emoji: "❄️",
+                            background: "linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%)",
+                            text: "Ma quando arrivò l'inverno freddo, le sue macchine salvarono tutti!"
+                        },
+                        {
+                            emoji: "🏠",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Aveva inventato un sistema di riscaldamento e raccolta cibo automatica!"
+                        },
+                        {
+                            emoji: "🎉",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Tutti ringraziarono Rodolfo: la creatività è preziosa!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Montagna Chiacchierona",
+                    icon: "⛰️",
+                    pages: [
+                        {
+                            emoji: "⛰️",
+                            background: "linear-gradient(135deg, #636e72 0%, #2d3436 100%)",
+                            text: "C'era una montagna antica che amava raccontare storie."
+                        },
+                        {
+                            emoji: "🦕",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "'Io ho visto i dinosauri camminare qui milioni di anni fa!', diceva."
+                        },
+                        {
+                            emoji: "🏰",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "'Ho visto cavalieri costruire castelli sulla mia cima!'."
+                        },
+                        {
+                            emoji: "🧗",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Gli scalatori si fermavano per ascoltare le sue storie incredibili."
+                        },
+                        {
+                            emoji: "⭐",
+                            background: "linear-gradient(135deg, #192a56 0%, #273c75 100%)",
+                            text: "'Ho contato le stelle nascere e morire nel cielo'."
+                        },
+                        {
+                            emoji: "🌳",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "'Ho visto foreste crescere e stagioni cambiare migliaia di volte'."
+                        },
+                        {
+                            emoji: "👨‍👩‍👧‍👦",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Le persone portavano i bambini per ascoltare la montagna saggia."
+                        },
+                        {
+                            emoji: "📚",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "La montagna insegnò che le storie connettono passato, presente e futuro!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Semaforo Gentile",
+                    icon: "🚦",
+                    pages: [
+                        {
+                            emoji: "🚦",
+                            background: "linear-gradient(135deg, #636e72 0%, #2d3436 100%)",
+                            text: "In città c'era un semaforo speciale con un bottone azzurro."
+                        },
+                        {
+                            emoji: "💙",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Chi si sentiva triste poteva premere il bottone azzurro."
+                        },
+                        {
+                            emoji: "💬",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Il semaforo diceva: 'Sei speciale!' 'Andrà tutto bene!'."
+                        },
+                        {
+                            emoji: "😊",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Le persone si fermavano ad ascoltare le parole gentili."
+                        },
+                        {
+                            emoji: "🤗",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "'Tu sei importante!' 'Il mondo ha bisogno di te!'."
+                        },
+                        {
+                            emoji: "👨‍👩‍👧‍👦",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Ben presto tutta la città cominciò a dire parole gentili."
+                        },
+                        {
+                            emoji: "🏙️",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Le persone si aiutavano e sorridevano di più ogni giorno."
+                        },
+                        {
+                            emoji: "❤️",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Il semaforo insegnò che le parole gentili cambiano il mondo!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Nuvola Curiosa",
+                    icon: "☁️",
+                    pages: [
+                        {
+                            emoji: "☁️",
+                            background: "linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%)",
+                            text: "Una nuvoletta bianca voleva scoprire cosa c'era sotto di lei."
+                        },
+                        {
+                            emoji: "🏔️",
+                            background: "linear-gradient(135deg, #636e72 0%, #2d3436 100%)",
+                            text: "Scese più in basso e vide montagne altissime coperte di neve."
+                        },
+                        {
+                            emoji: "🌊",
+                            background: "linear-gradient(135deg, #0abde3 0%, #48dbfb 100%)",
+                            text: "Vide fiumi che serpeggiavano come nastri azzurri."
+                        },
+                        {
+                            emoji: "🏙️",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Scoprì città piene di luci e persone che camminavano."
+                        },
+                        {
+                            emoji: "👶",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Vide bambini che giocavano nei parchi e ridevano."
+                        },
+                        {
+                            emoji: "💧",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "'Posso aiutare!' pensò, e fece piovere sui fiori assetati."
+                        },
+                        {
+                            emoji: "🌈",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #fd79a8 100%)",
+                            text: "I bambini le fecero ciao e apparve un arcobaleno!"
+                        },
+                        {
+                            emoji: "✨",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "La nuvoletta tornava spesso: aveva trovato nuovi amici sulla Terra!"
+                        }
+                    ]
+                },
+                {
+                    title: "L'Orso e il Miele Magico",
+                    icon: "🐻",
+                    pages: [
+                        {
+                            emoji: "🐻",
+                            background: "linear-gradient(135deg, #d4a574 0%, #a67c52 100%)",
+                            text: "Un orsetto trovò un alveare speciale che faceva miele magico."
+                        },
+                        {
+                            emoji: "🍯",
+                            background: "linear-gradient(135deg, #feca57 0%, #ee5a6f 100%)",
+                            text: "Il miele dorato aveva un potere: esaudiva i desideri buoni!"
+                        },
+                        {
+                            emoji: "🦊",
+                            background: "linear-gradient(135deg, #ee5a6f 0%, #ff6b6b 100%)",
+                            text: "Una volpe malata assaggiò il miele e guarì all'istante!"
+                        },
+                        {
+                            emoji: "🐰",
+                            background: "linear-gradient(135deg, #dfe6e9 0%, #b2bec3 100%)",
+                            text: "Un coniglietto timido divenne coraggioso dopo averlo mangiato."
+                        },
+                        {
+                            emoji: "🤔",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "L'orsetto pensò: 'Voglio condividerlo con tutti!'."
+                        },
+                        {
+                            emoji: "🌳",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Piantò semi dell'alveare magico in tutto il bosco."
+                        },
+                        {
+                            emoji: "🐝",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Presto ogni animale ebbe il proprio alveare magico!"
+                        },
+                        {
+                            emoji: "💚",
+                            background: "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+                            text: "L'orso imparò che la magia più grande è la condivisione!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Robot dei Ricordi",
+                    icon: "🤖",
+                    pages: [
+                        {
+                            emoji: "🤖",
+                            background: "linear-gradient(135deg, #636e72 0%, #b2bec3 100%)",
+                            text: "C'era un robot speciale che conservava i ricordi felici della gente."
+                        },
+                        {
+                            emoji: "💭",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Quando qualcuno era triste, il robot gli mostrava bei ricordi."
+                        },
+                        {
+                            emoji: "🎂",
+                            background: "linear-gradient(135deg, #feca57 0%, #ee5a6f 100%)",
+                            text: "Ricordi di feste di compleanno, regali e torte!"
+                        },
+                        {
+                            emoji: "🏖️",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Ricordi di vacanze al mare e castelli di sabbia."
+                        },
+                        {
+                            emoji: "👨‍👩‍👧‍👦",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "Ricordi di abbracci della famiglia e momenti felici."
+                        },
+                        {
+                            emoji: "😢",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Un giorno il robot si ruppe e perse tutti i ricordi!"
+                        },
+                        {
+                            emoji: "💡",
+                            background: "linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%)",
+                            text: "Ma la gente raccontò i loro ricordi al robot per ripararlo."
+                        },
+                        {
+                            emoji: "❤️",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "Il robot capì: i ricordi veri sono nei cuori, non nei circuiti!"
+                        }
+                    ]
+                },
+                {
+                    title: "La Sirena e la Conchiglia",
+                    icon: "🧜‍♀️",
+                    pages: [
+                        {
+                            emoji: "🧜‍♀️",
+                            background: "linear-gradient(135deg, #0abde3 0%, #48dbfb 100%)",
+                            text: "Nel mare profondo viveva una sirena che cercava una conchiglia speciale."
+                        },
+                        {
+                            emoji: "🐚",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "La leggenda diceva che poteva amplificare la voce per cantare ancora meglio."
+                        },
+                        {
+                            emoji: "🗺️",
+                            background: "linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%)",
+                            text: "Viaggiò attraverso oceani, seguendo una mappa antica."
+                        },
+                        {
+                            emoji: "🐙",
+                            background: "linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)",
+                            text: "Un polpo saggio le disse: 'La conchiglia è dove meno te l'aspetti'."
+                        },
+                        {
+                            emoji: "🏖️",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Cercò in spiagge lontane, grotte profonde, relitti antichi."
+                        },
+                        {
+                            emoji: "💡",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "Alla fine capì: la conchiglia era sempre stata nella sua casa!"
+                        },
+                        {
+                            emoji: "🎵",
+                            background: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+                            text: "Cantò con la conchiglia e la sua voce riempì tutto l'oceano."
+                        },
+                        {
+                            emoji: "✨",
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            text: "La sirena imparò: quello che cerchiamo è spesso più vicino di quanto pensiamo!"
+                        }
+                    ]
+                },
+                {
+                    title: "Il Piccolo Vulcano",
+                    icon: "🌋",
+                    pages: [
+                        {
+                            emoji: "🌋",
+                            background: "linear-gradient(135deg, #2d3436 0%, #636e72 100%)",
+                            text: "C'era un piccolo vulcano che aveva paura di eruttare."
+                        },
+                        {
+                            emoji: "😰",
+                            background: "linear-gradient(135deg, #74b9ff 0%, #0984e3 100%)",
+                            text: "'E se faccio troppo rumore? E se spavento qualcuno?', pensava."
+                        },
+                        {
+                            emoji: "🏔️",
+                            background: "linear-gradient(135deg, #636e72 0%, #b2bec3 100%)",
+                            text: "I vulcani più grandi dicevano: 'Devi eruttare, è la tua natura!'."
+                        },
+                        {
+                            emoji: "🌱",
+                            background: "linear-gradient(135deg, #00b894 0%, #55efc4 100%)",
+                            text: "Un giorno vide che intorno ai vulcani crescevano piante bellissime."
+                        },
+                        {
+                            emoji: "🌺",
+                            background: "linear-gradient(135deg, #fd79a8 0%, #e84393 100%)",
+                            text: "La lava fertilizzava il terreno e creava nuova vita!"
+                        },
+                        {
+                            emoji: "💪",
+                            background: "linear-gradient(135deg, #feca57 0%, #ee5a6f 100%)",
+                            text: "Il vulcanetto prese coraggio: 'Posso aiutare la natura!'."
+                        },
+                        {
+                            emoji: "🎆",
+                            background: "linear-gradient(135deg, #e55039 0%, #eb2f06 100%)",
+                            text: "Eruttò dolcemente, creando terra fertile e minerali preziosi."
+                        },
+                        {
+                            emoji: "🌸",
+                            background: "linear-gradient(135deg, #fab1a0 0%, #ff7675 100%)",
+                            text: "Intorno a lui crebbe il giardino più bello: essere se stessi aiuta il mondo!"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        let currentAge = null;
+        let currentStory = null;
+        let currentPage = 0;
+
+        document.getElementById('ageSelector').addEventListener('click', (e) => {
+            if (e.target.classList.contains('age-btn')) {
+                selectAge(e.target.dataset.age);
+            }
+        });
+
+        document.getElementById('backBtn').addEventListener('click', showStoryList);
+        document.getElementById('prevBtn').addEventListener('click', () => changePage(-1));
+        document.getElementById('nextBtn').addEventListener('click', () => changePage(1));
+
+        function selectAge(age) {
+            currentAge = age;
+            
+            document.querySelectorAll('.age-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.age === age);
+            });
+
+            showStoryList();
+        }
+
+        function showStoryList() {
+            const grid = document.getElementById('storiesGrid');
+            const viewer = document.getElementById('storyViewer');
+            
+            grid.innerHTML = '';
+            grid.classList.remove('hidden');
+            viewer.classList.remove('active');
+
+            const stories = STORIES[currentAge];
+            
+            stories.forEach((story, index) => {
+                const card = document.createElement('div');
+                card.className = 'story-card';
+                card.innerHTML = `
+                    <div class="icon">${story.icon}</div>
+                    <div class="title">${story.title}</div>
+                `;
+                card.addEventListener('click', () => openStory(index));
+                grid.appendChild(card);
+            });
+        }
+
+        function openStory(index) {
+            currentStory = STORIES[currentAge][index];
+            currentPage = 0;
+
+            document.getElementById('storiesGrid').classList.add('hidden');
+            document.getElementById('storyViewer').classList.add('active');
+
+            showPage();
+        }
+
+        function showPage() {
+            const page = currentStory.pages[currentPage];
+            const illustration = document.getElementById('storyIllustration');
+            
+            // Set background
+            illustration.style.background = page.background;
+            
+            // Create decorative shapes
+            const shapes = createDecorativeShapes(page.background);
+            
+            // Set content
+            illustration.innerHTML = `
+                <div class="decorative-shapes">${shapes}</div>
+                <div class="emoji">${page.emoji}</div>
+            `;
+            
+            document.getElementById('storyText').textContent = page.text;
+            document.getElementById('pageIndicator').textContent = `${currentPage + 1} / ${currentStory.pages.length}`;
+            
+            document.getElementById('prevBtn').disabled = currentPage === 0;
+            document.getElementById('nextBtn').disabled = currentPage === currentStory.pages.length - 1;
+        }
+
+        function createDecorativeShapes(background) {
+            const shapes = [];
+            const numShapes = 15;
+            
+            for (let i = 0; i < numShapes; i++) {
+                const size = Math.random() * 60 + 20;
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const rotation = Math.random() * 360;
+                const opacity = Math.random() * 0.3 + 0.1;
+                
+                const shapeType = Math.floor(Math.random() * 3);
+                let shape;
+                
+                if (shapeType === 0) {
+                    // Circle
+                    shape = `<div style="position: absolute; left: ${x}%; top: ${y}%; width: ${size}px; height: ${size}px; border-radius: 50%; background: rgba(255,255,255,${opacity}); transform: rotate(${rotation}deg);"></div>`;
+                } else if (shapeType === 1) {
+                    // Triangle
+                    shape = `<div style="position: absolute; left: ${x}%; top: ${y}%; width: 0; height: 0; border-left: ${size/2}px solid transparent; border-right: ${size/2}px solid transparent; border-bottom: ${size}px solid rgba(255,255,255,${opacity}); transform: rotate(${rotation}deg);"></div>`;
+                } else {
+                    // Square
+                    shape = `<div style="position: absolute; left: ${x}%; top: ${y}%; width: ${size}px; height: ${size}px; background: rgba(255,255,255,${opacity}); transform: rotate(${rotation}deg);"></div>`;
+                }
+                
+                shapes.push(shape);
+            }
+            
+            return shapes.join('');
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            if (currentPage < 0) currentPage = 0;
+            if (currentPage >= currentStory.pages.length) currentPage = currentStory.pages.length - 1;
+            showPage();
+        }
+    </script>
+</body>
+</html>
